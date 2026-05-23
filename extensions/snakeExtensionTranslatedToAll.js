@@ -223,43 +223,81 @@
   
     class UltimateSnake1005Extension {
       getInfo() {
-        // Автономное i18n-ядро на основе чтения языка приложения
-        let lang = 'en';
-        if (typeof window !== 'undefined' && window.navigator) {
-          const browserLang = window.navigator.language || window.navigator.userLanguage || 'en';
-          if (browserLang.startsWith('ru')) lang = 'ru';
-        }
+        // Прямой, отказоустойчивый словарь локализации
+        const menuTitles = {
+          ru: { b: "Текст игрового поля", i: "Начать: Ширина [W] Высота [H] Режим [MODE]", s: "Настройка: Скорость (мс) [SPD] Старт Длина [LEN]", k: "Эмодзи: ПолеА [A] ПолеБ [B] Яблоко [APL] Голова [HD] Тело [BD] БезЩита [SHD]", c: "Действие игры: [ACTION]", d: "Повернуть змейку: [DIR]", sc: "Текущие очки", m1: "📦 Режимы: Классика [MODE]", m2: "🌌 Режимы: Пространство [MODE]", m3: "⚙️ Режимы: Управление [MODE]", m4: "💀 Режимы: Выживание [MODE]", m5: "🕹️ Режимы: Аркада [MODE]", m6: "🧮 Режимы: Математика [MODE]" },
+          en: { b: "Game Board Text", i: "Start: Width [W] Height [H] Mode [MODE]", s: "Setup: Speed (ms) [SPD] Start Length [LEN]", k: "Skins: GridA [A] GridB [B] Apple [APL] Head [HD] Body [BD] BrokenShield [SHD]", c: "Game Action: [ACTION]", d: "Turn Snake: [DIR]", sc: "Current Score", m1: "📦 Modes: Classic [MODE]", m2: "🌌 Modes: Space [MODE]", m3: "⚙️ Modes: Control [MODE]", m4: "💀 Modes: Survival [MODE]", m5: "🕹️ Modes: Arcade [MODE]", m6: "🧮 Modes: Math [MODE]" }
+        };
   
-        // Локализованные тексты блоков
-        const m = {
-          ru: {
-            n: 'Google Змейка: 1005 Режимов', b: "Текст игрового поля", i: "Начать: Ширина [W] Высота [H] Режим [MODE]", 
-            s: "Настройка: Скорость (мс) [SPD] Старт Длина [LEN]", k: "Эмодзи: ПолеА [A] ПолеБ [B] Яблоко [APL] Голова [HD] Тело [BD] БезЩита [SHD]", 
-            c: "Действие игры: [ACTION]", d: "Повернуть змейку: [DIR]", sc: "Текущие очки", 
-            m1: "📦 Режимы: Классика [MODE]", m2: "🌌 Режимы: Пространство [MODE]", m3: "⚙️ Режимы: Управление [MODE]", 
-            m4: "💀 Режимы: Выживание [MODE]", m5: "🕹️ Режимы: Arcade [MODE]", m6: "🧮 Режимы: Математика [MODE]"
-          },
-          en: {
-            n: 'Google Snake: 1005 Modes', b: "Game Board Text", i: "Start: Width [W] Height [H] Mode [MODE]", 
-            s: "Setup: Speed (ms) [SPD] Start Length [LEN]", k: "Skins: GridA [A] GridB [B] Apple [APL] Head [HD] Body [BD] BrokenShield [SHD]", 
-            c: "Game Action: [ACTION]", d: "Turn Snake: [DIR]", sc: "Current Score", 
-            m1: "📦 Modes: Classic [MODE]", m2: "🌌 Modes: Space [MODE]", m3: "⚙️ Modes: Control [MODE]", 
-            m4: "💀 Modes: Survival [MODE]", m5: "🕹️ Modes: Arcade [MODE]", m6: "🧮 Modes: Math [MODE]"
-          }
-        }[lang];
+        let currentLang = 'ru';
+        if (typeof Scratch !== 'undefined' && Scratch.translate && typeof Scratch.translate.getLang === 'function') {
+          currentLang = Scratch.translate.getLang();
+        } else if (typeof window !== 'undefined' && window.navigator) {
+          currentLang = window.navigator.language || window.navigator.userLanguage || 'ru';
+        }
+
+        let userLang = 'ru';
+        if (!currentLang.startsWith('ru')) {
+          userLang = 'en';
+        }
+        
+        const m = menuTitles[userLang];
   
         return {
           id: 'ultimateSnake1005Engine',
-          name: m.n,
+          name: userLang === 'ru' ? 'Google Змейка: 1005 Режимов' : 'Google Snake: 1005 Modes',
           color1: '#4285F4', 
           blocks: [
             { opcode: 'getBoardText', blockType: Scratch.BlockType.REPORTER, text: m.b },
             '---',
-            { opcode: 'initGame', blockType: Scratch.BlockType.COMMAND, text: m.i },
-            { opcode: 'setSettings', blockType: Scratch.BlockType.COMMAND, text: m.s },
-            { opcode: 'setSkins', blockType: Scratch.BlockType.COMMAND, text: m.k },
-            { opcode: 'controlGame', blockType: Scratch.BlockType.COMMAND, text: m.c },
-            { opcode: 'changeDirection', blockType: Scratch.BlockType.COMMAND, text: m.d },
+            { 
+              opcode: 'initGame', 
+              blockType: Scratch.BlockType.COMMAND, 
+              text: m.i,
+              arguments: {
+                W: { type: Scratch.ArgumentType.NUMBER, defaultValue: 12 },
+                H: { type: Scratch.ArgumentType.NUMBER, defaultValue: 10 },
+                MODE: { type: Scratch.ArgumentType.STRING, defaultValue: 'classic' }
+              }
+            },
+            { 
+              opcode: 'setSettings', 
+              blockType: Scratch.BlockType.COMMAND, 
+              text: m.s,
+              arguments: {
+                SPD: { type: Scratch.ArgumentType.NUMBER, defaultValue: 200 },
+                LEN: { type: Scratch.ArgumentType.NUMBER, defaultValue: 3 }
+              }
+            },
+            { 
+              opcode: 'setSkins', 
+              blockType: Scratch.BlockType.COMMAND, 
+              text: m.k,
+              arguments: {
+                A: { type: Scratch.ArgumentType.STRING, defaultValue: '🟩' },
+                B: { type: Scratch.ArgumentType.STRING, defaultValue: '🟫' },
+                APL: { type: Scratch.ArgumentType.STRING, defaultValue: '🍎' },
+                HD: { type: Scratch.ArgumentType.STRING, defaultValue: '👀' },
+                BD: { type: Scratch.ArgumentType.STRING, defaultValue: '🟢' },
+                SHD: { type: Scratch.ArgumentType.STRING, defaultValue: '💀' }
+              }
+            },
+            { 
+              opcode: 'controlGame', 
+              blockType: Scratch.BlockType.COMMAND, 
+              text: m.c,
+              arguments: {
+                ACTION: { type: Scratch.ArgumentType.STRING, menu: 'actionsMenu', defaultValue: 'start' }
+              }
+            },
+            { 
+              opcode: 'changeDirection', 
+              blockType: Scratch.BlockType.COMMAND, 
+              text: m.d,
+              arguments: {
+                DIR: { type: Scratch.ArgumentType.STRING, menu: 'directionsMenu', defaultValue: 'right' }
+              }
+            },
             '---',
             { opcode: 'getScore', blockType: Scratch.BlockType.REPORTER, text: m.sc },
             '---',
@@ -271,12 +309,17 @@
             { opcode: 'menuMathGenerator', blockType: Scratch.BlockType.REPORTER, text: m.m6, arguments: { MODE: { type: Scratch.ArgumentType.STRING, menu: 'menuMathGeneratorList', defaultValue: 'm260' } } }
           ],
           menus: {
-            actionsMenu: { acceptReporters: false, items: lang === 'ru' ? ['старт', 'пауза', 'reset'] : ['start', 'pause', 'reset'] },
-            directionsMenu: { acceptReporters: false, items: lang === 'ru' ? ['вверх', 'вниз', 'влево', 'вправо'] : ['up', 'down', 'left', 'right'] },
-            
+            actionsMenu: { 
+              acceptReporters: false, 
+              items: userLang === 'ru' ? ['старт', 'пауза', 'reset'] : ['start', 'pause', 'reset']
+            },
+            directionsMenu: { 
+              acceptReporters: false, 
+              items: userLang === 'ru' ? ['вверх', 'вниз', 'влево', 'вправо'] : ['up', 'down', 'left', 'right']
+            },
             menuClassicList: {
               acceptReporters: false,
-              items: lang === 'ru' ? [
+              items: userLang === 'ru' ? [
                 { text: '1. Классика (Стены)', value: 'classic' }, { text: '2. Без стен (Сквозь экран)', value: 'wallless' }, { text: '3. Порталы', value: 'portal' },
                 { text: '4. Бесконечный рост', value: 'infinite' }, { text: '5. Двойная голова (Twin)', value: 'twin' }, { text: '6. Зеркальное управление', value: 'mirror' },
                 { text: '7. Пьяная змейка (Хаос)', value: 'drunk' }, { text: '8. Режим Сыр (Сквозь тело)', value: 'cheese' }, { text: '9. Минное Поле', value: 'minesweeper' },
@@ -292,10 +335,10 @@
             },
             menuSpaceList: {
               acceptReporters: false,
-              items: lang === 'ru' ? [
+              items: userLang === 'ru' ? [
                 { text: '16. Микромир 5х5', value: 'm16' }, { text: '17. Массивный рост', value: 'm17' }, { text: '18. Скользкий лед', value: 'm18' },
                 { text: '20. Режим Призрак', value: 'm20' }, { text: '21. Головоломка Сокобан', value: 'm21' }, { text: '22. Мир Инь-Янь', value: 'm22' },
-                { text: '24. Космический вакуум', value: 'm24' }, { text: '25. Горизонтальное metro', value: 'm25' }, { text: '26. Вертикальный лифт', value: 'm26' },
+                { text: '24. Космический вакуум', value: 'm24' }, { text: '25. Горизонтальное метро', value: 'm25' }, { text: '26. Вертикальный лифт', value: 'm26' },
                 { text: '27. Квадратный коридор', value: 'm27' }, { text: '28. Замкнутая комната', value: 'm28' }, { text: '29. Четыре коридора', value: 'm29' },
                 { text: '30. Остров сокровищ', value: 'm30' }, { text: '34. Пещера ужасов', value: 'm34' }, { text: '35. Каменный Лабиринт', value: 'm35' }
               ] : [
@@ -308,7 +351,7 @@
             },
             menuControlList: {
               acceptReporters: false,
-              items: lang === 'ru' ? [
+              items: userLang === 'ru' ? [
                 { text: '36. Реверс по кнопке', value: 'm36' }, { text: '37. Турбо-ускорение x3', value: 'm37' }, { text: '38. Черепаший шаг', value: 'm38' },
                 { text: '41. Дрожь земли', value: 'm41' }, { text: '42. Внезапный разворот змеи', value: 'm42' }, { text: '43. Залипающие клавиши', value: 'm43' },
                 { text: '44. Космическая невесомость', value: 'm44' }, { text: '46. Отраженный мир', value: 'm46' }, { text: '47. Медленный старт', value: 'm47' }
@@ -320,7 +363,7 @@
           },
           menuSurvivalList: {
             acceptReporters: false,
-            items: lang === 'ru' ? [
+            items: userLang === 'ru' ? [
               { text: '56. Таймер смерти (10 сек)', value: 'm56' }, { text: '57. Лазерный обстрел', value: 'm57' }, { text: '58. Кислотный дождь', value: 'm58' },
               { text: '59. Голодание (Потеря хвоста)', value: 'm59' }, { text: '60. Скорость без тормозов', value: 'm60' }, { text: '65. Полная слепота', value: 'm65' },
               { text: '67. Радиоактивная зона', value: 'm67' }, { text: '68. Скоростная паника', value: 'm68' }, { text: '69. Цунами сетки', value: 'm69' },
@@ -336,7 +379,7 @@
           },
           menuArcadeList: {
             acceptReporters: false,
-            items: lang === 'ru' ? [
+            items: userLang === 'ru' ? [
               { text: '16. Прыгающие порталы (При выходе)', value: '16' }, 
               { text: '86. Внезапная смерть', value: 'm86' }, { text: '87. Симулятор слизня', value: 'm87' }, { text: '89. Циклический хаос', value: 'm89' },
               { text: '90. Скоростной туннель', value: 'm90' }, { text: '91. Зеркальная иллюзия', value: 'm91' }, { text: '93. Возврат бумеранга', value: 'm93' },
@@ -354,7 +397,7 @@
           },
           menuMathGeneratorList: {
             acceptReporters: false,
-            items: lang === 'ru' ? [
+            items: userLang === 'ru' ? [
               { text: 'Генератор: Червоточины (x13)', value: 'm260' }, { text: 'Генератор: Минные поля (x17)', value: 'm340' },
               { text: 'Генератор: Летающие фрукты (x19)', value: 'm380' }, { text: 'Генератор: Квантовый призрак (x23)', value: 'm460' },
               { text: 'Генератор: Туман и слепота (x27)', value: 'm540' }, { text: 'Генератор: Сбои управления (x31)', value: 'm620' },
