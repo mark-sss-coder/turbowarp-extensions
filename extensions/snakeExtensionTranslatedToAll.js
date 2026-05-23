@@ -229,16 +229,18 @@
           en: { b: "Game Board Text", i: "Start: Width [W] Height [H] Mode [MODE]", s: "Setup: Speed (ms) [SPD] Start Length [LEN]", k: "Skins: GridA [A] GridB [B] Apple [APL] Head [HD] Body [BD] BrokenShield [SHD]", c: "Game Action: [ACTION]", d: "Turn Snake: [DIR]", sc: "Current Score", m1: "📦 Modes: Classic [MODE]", m2: "🌌 Modes: Space [MODE]", m3: "⚙️ Modes: Control [MODE]", m4: "💀 Modes: Survival [MODE]", m5: "🕹️ Modes: Arcade [MODE]", m6: "🧮 Modes: Math [MODE]" }
         };
   
-        let currentLang = 'ru';
-        if (typeof Scratch !== 'undefined' && Scratch.translate && typeof Scratch.translate.getLang === 'function') {
-          currentLang = Scratch.translate.getLang();
-        } else if (typeof window !== 'undefined' && window.navigator) {
-          currentLang = window.navigator.language || window.navigator.userLanguage || 'ru';
-        }
-
+        // Универсальный и безопасный детектор языка (работает на любом зеркале и офлайн)
         let userLang = 'ru';
-        if (!currentLang.startsWith('ru')) {
-          userLang = 'en';
+        try {
+          let currentLang = 'ru';
+          if (typeof Scratch !== 'undefined' && Scratch.translate && typeof Scratch.translate.getLang === 'function') {
+            currentLang = Scratch.translate.getLang(); // Работает, если расширение встроено в систему
+          } else if (typeof window !== 'undefined' && window.navigator) {
+            currentLang = window.navigator.language || window.navigator.userLanguage || 'ru'; // Берет язык системы на зеркалах
+          }
+          if (!currentLang.toLowerCase().startsWith('ru')) userLang = 'en';
+        } catch (e) {
+          userLang = 'ru'; // Защита от любых непредвиденных сбоев рантайма
         }
         
         const m = menuTitles[userLang];
@@ -359,69 +361,69 @@
                 { text: '36. Button Reverse', value: 'm36' }, { text: '37. Turbo Speed x3', value: 'm37' }, { text: '38. Turtle Pace', value: 'm38' },
                 { text: '41. Earth Tremor', value: 'm41' }, { text: '42. Sudden Turn', value: 'm42' }, { text: '43. Sticky Keys', value: 'm43' },
                 { text: '44. Anti-Gravity Space', value: 'm44' }, { text: '46. Reflected World', value: 'm46' }, { text: '47. Slow Start', value: 'm47' }
-            ]
-          },
-          menuSurvivalList: {
-            acceptReporters: false,
-            items: userLang === 'ru' ? [
-              { text: '56. Таймер смерти (10 сек)', value: 'm56' }, { text: '57. Лазерный обстрел', value: 'm57' }, { text: '58. Кислотный дождь', value: 'm58' },
-              { text: '59. Голодание (Потеря хвоста)', value: 'm59' }, { text: '60. Скорость без тормозов', value: 'm60' }, { text: '65. Полная слепота', value: 'm65' },
-              { text: '67. Радиоактивная зона', value: 'm67' }, { text: '68. Скоростная паника', value: 'm68' }, { text: '69. Цунами сетки', value: 'm69' },
-              { text: '73. Падающие камни', value: 'm73' }, { text: '75. Хрупкий стеклянный пол', value: 'm75' }, { text: '76. Огненные блоки следа', value: 'm76' },
-              { text: '82. Болотная грязь', value: 'm82' }, { text: '84. Песчаная буря', value: 'm84' }, { text: '85. Ураганный ветер', value: 'm85' }
-            ] : [
-              { text: '56. 10 Sec Death Timer', value: 'm56' }, { text: '57. Laser Strike', value: 'm57' }, { text: '58. Acid Rain', value: 'm58' },
-              { text: '59. Starvation Mode', value: 'm59' }, { text: '60. No Brakes Speed', value: 'm60' }, { text: '65. Pitch Black Blindness', value: 'm65' },
-              { text: '67. Radioactive Zone', value: 'm67' }, { text: '68. Speed Panic Growth', value: 'm68' }, { text: '69. Grid Tsunami Shift', value: 'm69' },
-              { text: '73. Falling Rocks', value: 'm73' }, { text: '75. Glass Floor Break', value: 'm75' }, { text: '76. Fiery Trail Blocks', value: 'm76' },
-              { text: '82. Swamp Mud Slowdown', value: 'm82' }, { text: '84. Blinding Sandstorm', value: 'm84' }, { text: '85. Hurricane Wind Push', value: 'm85' }
-            ]
-          },
-          menuArcadeList: {
-            acceptReporters: false,
-            items: userLang === 'ru' ? [
-              { text: '16. Прыгающие порталы (При выходе)', value: '16' }, 
-              { text: '86. Внезапная смерть', value: 'm86' }, { text: '87. Симулятор слизня', value: 'm87' }, { text: '89. Циклический хаос', value: 'm89' },
-              { text: '90. Скоростной туннель', value: 'm90' }, { text: '91. Зеркальная иллюзия', value: 'm91' }, { text: '93. Возврат бумеранга', value: 'm93' },
-              { text: '95. Колебание матрицы', value: 'm95' }, { text: '96. Квантовая запутанность', value: 'm96' }, { text: '98. Электрошок хвоста', value: 'm98' },
-              { text: '100. Гравитационное поле', value: 'm100' }, { text: '104. Забывчивая змея', value: 'm104' }, { text: '106. Метеоритный дождь', value: 'm106' },
-              { text: '110. Нестабильное ядро', value: 'm110' }, { text: '111. Портал в ад', value: 'm111' }, { text: '115. Финал: Абсолютный Бог', value: 'm115' }
-            ] : [
-              { text: '16. Jumping Portals (On exit)', value: '16' }, 
-              { text: '86. Sudden Death', value: 'm86' }, { text: '87. Slime Simulator', value: 'm87' }, { text: '89. Cyclic Chaos Loop', value: 'm89' },
-              { text: '90. Highspeed Tunnel', value: 'm90' }, { text: '91. Mirror Room Illusion', value: 'm91' }, { text: '93. Boomerang Return', value: 'm93' },
-              { text: '95. Matrix Grid Wobble', value: 'm95' }, { text: '96. Quantum Entanglement', value: 'm96' }, { text: '98. Electric Shock Shaver', value: 'm98' },
-              { text: '100. Gravity Field Drag', value: 'm100' }, { text: '104. Forgetful Snake Memory', value: 'm104' }, { text: '106. Meteor Shower Rain', value: 'm106' },
-              { text: '110. Unstable Nuclear Core', value: 'm110' }, { text: '111. Portal to Hell', value: 'm111' }, { text: '115. Final: Absolute God', value: 'm115' }
-            ]
-          },
-          menuMathGeneratorList: {
-            acceptReporters: false,
-            items: userLang === 'ru' ? [
-              { text: 'Генератор: Червоточины (x13)', value: 'm260' }, { text: 'Генератор: Минные поля (x17)', value: 'm340' },
-              { text: 'Генератор: Летающие фрукты (x19)', value: 'm380' }, { text: 'Генератор: Квантовый призрак (x23)', value: 'm460' },
-              { text: 'Генератор: Туман и слепота (x27)', value: 'm540' }, { text: 'Генератор: Сбои управления (x31)', value: 'm620' },
-              { text: 'Генератор: Рост преград (x37)', value: 'm740' }, { text: 'Генератор: Бесконечная петля (x39)', value: 'm780' },
-              { text: 'Генератор: Инверсия структуры (x41)', value: 'm820' }, { text: 'Генератор: Метеорный шторм (x43)', value: 'm860' },
-              { text: 'Генератор: Кислотные ягоды (x47)', value: 'm940' }, { text: 'Генератор: Золотой Джекпот (x53)', value: 'm954' },
-              { text: 'Генератор: Сверхзвуковая паника (x100)', value: 'm1000' },
-              { text: 'Генератор: Прыгающие порталы при выходе (x16)', value: '16' },
-              { text: 'Генератор: Абсолютный Апокалипсис (x1005)', value: 'm1005' }
-            ] : [
-              { text: 'Generator: Wormholes (x13)', value: 'm260' }, { text: 'Generator: Mines fields (x17)', value: 'm340' },
-              { text: 'Generator: Flying Fruits (x19)', value: 'm380' }, { text: 'Generator: Quantum Ghost (x23)', value: 'm460' },
-              { text: 'Generator: Mist Blindness (x27)', value: 'm540' }, { text: 'Generator: Control Glitch (x31)', value: 'm620' },
-              { text: 'Generator: Obstacle Growth (x37)', value: 'm740' }, { text: 'Generator: Infinite Loop (x39)', value: 'm780' },
-              { text: 'Generator: Inverse Bones (x41)', value: 'm820' }, { text: 'Generator: Meteor Storm (x43)', value: 'm860' },
-              { text: 'Generator: Acid Berries (x47)', value: 'm940' }, { text: 'Generator: Golden Jackpot (x53)', value: 'm954' },
-              { text: 'Generator: Supersonic Panic (x100)', value: 'm1000' },
-              { text: 'Generator: Jumping Portals (x16)', value: '16' },
-              { text: 'Generator: Ultimate Apocalypse (x1005)', value: 'm1005' }
-            ]
+              ]
+            },
+            menuSurvivalList: {
+              acceptReporters: false,
+              items: userLang === 'ru' ? [
+                { text: '56. Таймер смерти (10 сек)', value: 'm56' }, { text: '57. Лазерный обстрел', value: 'm57' }, { text: '58. Кислотный дождь', value: 'm58' },
+                { text: '59. Голодание (Потеря хвоста)', value: 'm59' }, { text: '60. Скорость без тормозов', value: 'm60' }, { text: '65. Полная слепота', value: 'm65' },
+                { text: '67. Радиоактивная зона', value: 'm67' }, { text: '68. Скоростная паника', value: 'm68' }, { text: '69. Сдвиг цунами', value: 'm69' },
+                { text: '73. Падающие камни', value: 'm73' }, { text: '75. Хрупкий стеклянный пол', value: 'm75' }, { text: '76. Огненные блоки следа', value: 'm76' },
+                { text: '82. Болотная грязь', value: 'm82' }, { text: '84. Песчаная буря', value: 'm84' }, { text: '85. Ураганный ветер', value: 'm85' }
+              ] : [
+                { text: '56. 10 Sec Death Timer', value: 'm56' }, { text: '57. Laser Strike', value: 'm57' }, { text: '58. Acid Rain', value: 'm58' },
+                { text: '59. Starvation Mode', value: 'm59' }, { text: '60. No Brakes Speed', value: 'm60' }, { text: '65. Pitch Black Blindness', value: 'm65' },
+                { text: '67. Radioactive Zone', value: 'm67' }, { text: '68. Speed Panic Growth', value: 'm68' }, { text: '69. Grid Tsunami Shift', value: 'm69' },
+                { text: '73. Falling Rocks', value: 'm73' }, { text: '75. Glass Floor Break', value: 'm75' }, { text: '76. Fiery Trail Blocks', value: 'm76' },
+                { text: '82. Swamp Mud Slowdown', value: 'm82' }, { text: '84. Blinding Sandstorm', value: 'm84' }, { text: '85. Hurricane Wind Push', value: 'm85' }
+              ]
+            },
+            menuArcadeList: {
+              acceptReporters: false,
+              items: userLang === 'ru' ? [
+                { text: '16. Прыгающие порталы (При выходе)', value: '16' }, 
+                { text: '86. Внезапная смерть', value: 'm86' }, { text: '87. Симулятор слизня', value: 'm87' }, { text: '89. Циклический хаос', value: 'm89' },
+                { text: '90. Скоростной туннель', value: 'm90' }, { text: '91. Зеркальная иллюзия', value: 'm91' }, { text: '93. Возврат бумеранга', value: 'm93' },
+                { text: '95. Колебание матрицы', value: 'm95' }, { text: '96. Квантовая запутанность', value: 'm96' }, { text: '98. Электрошок хвоста', value: 'm98' },
+                { text: '100. Гравитационное поле', value: 'm100' }, { text: '104. Забывчивая змея', value: 'm104' }, { text: '106. Метеоритный дождь', value: 'm106' },
+                { text: '110. Нестабильное ядро', value: 'm110' }, { text: '111. Портал в ад', value: 'm111' }, { text: '115. Финал: Абсолютный Бог', value: 'm115' }
+              ] : [
+                { text: '16. Jumping Portals (On exit)', value: '16' }, 
+                { text: '86. Sudden Death', value: 'm86' }, { text: '87. Slime Simulator', value: 'm87' }, { text: '89. Cyclic Chaos Loop', value: 'm89' },
+                { text: '90. Highspeed Tunnel', value: 'm90' }, { text: '91. Mirror Room Illusion', value: 'm91' }, { text: '93. Boomerang Return', value: 'm93' },
+                { text: '95. Matrix Grid Wobble', value: 'm95' }, { text: '96. Quantum Entanglement', value: 'm96' }, { text: '98. Electric Shock Shaver', value: 'm98' },
+                { text: '100. Gravity Field Drag', value: 'm100' }, { text: '104. Forgetful Snake Memory', value: 'm104' }, { text: '106. Meteor Shower Rain', value: 'm106' },
+                { text: '110. Unstable Nuclear Core', value: 'm110' }, { text: '111. Portal to Hell', value: 'm111' }, { text: '115. Final: Absolute God', value: 'm115' }
+              ]
+            },
+            menuMathGeneratorList: {
+              acceptReporters: false,
+              items: userLang === 'ru' ? [
+                { text: 'Генератор: Червоточины (x13)', value: 'm260' }, { text: 'Генератор: Минные поля (x17)', value: 'm340' },
+                { text: 'Генератор: Летающие фрукты (x19)', value: 'm380' }, { text: 'Генератор: Квантовый призрак (x23)', value: 'm460' },
+                { text: 'Генератор: Туман и слепота (x27)', value: 'm540' }, { text: 'Генератор: Сбои управления (x31)', value: 'm620' },
+                { text: 'Генератор: Рост преград (x37)', value: 'm740' }, { text: 'Генератор: Бесконечная петля (x39)', value: 'm780' },
+                { text: 'Генератор: Инверсия структуры (x41)', value: 'm820' }, { text: 'Генератор: Метеорный шторм (x43)', value: 'm860' },
+                { text: 'Генератор: Кислотные ягоды (x47)', value: 'm940' }, { text: 'Генератор: Золотой Джекпот (x53)', value: 'm954' },
+                { text: 'Генератор: Сверхзвуковая паника (x100)', value: 'm1000' },
+                { text: 'Генератор: Прыгающие порталы при выходе (x16)', value: '16' },
+                { text: 'Генератор: Абсолютный Апокалипсис (x1005)', value: 'm1005' }
+              ] : [
+                { text: 'Generator: Wormholes (x13)', value: 'm260' }, { text: 'Generator: Mines fields (x17)', value: 'm340' },
+                { text: 'Generator: Flying Fruits (x19)', value: 'm380' }, { text: 'Generator: Quantum Ghost (x23)', value: 'm460' },
+                { text: 'Generator: Mist Blindness (x27)', value: 'm540' }, { text: 'Generator: Control Glitch (x31)', value: 'm620' },
+                { text: 'Generator: Obstacle Growth (x37)', value: 'm740' }, { text: 'Generator: Infinite Loop (x39)', value: 'm780' },
+                { text: 'Generator: Inverse Bones (x41)', value: 'm820' }, { text: 'Generator: Meteor Storm (x43)', value: 'm860' },
+                { text: 'Generator: Acid Berries (x47)', value: 'm940' }, { text: 'Generator: Golden Jackpot (x53)', value: 'm954' },
+                { text: 'Generator: Supersonic Panic (x100)', value: 'm1000' },
+                { text: 'Generator: Jumping Portals (x16)', value: '16' },
+                { text: 'Generator: Ultimate Apocalypse (x1005)', value: 'm1005' }
+              ]
+            }
           }
-        }
-      };
-    }
+        };
+      }
 
     menuClassic(args) { return args.MODE; }
     menuSpace(args) { return args.MODE; }
